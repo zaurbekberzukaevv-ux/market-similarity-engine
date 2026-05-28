@@ -29,5 +29,6 @@ class MarketWindow:
         self.start_time = self.data["date"].iloc[0]
         self.end_time = self.data["date"].iloc[-1]
         self.window_size = len(self.data)
-
+        self.features = None
+   
     
