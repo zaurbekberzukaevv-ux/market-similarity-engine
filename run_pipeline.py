@@ -4,6 +4,7 @@ from src.windows.window_builder import build_windows
 from src.windows.market_window import MarketWindow
 from src.features.feature_extractor import FeatureExtractor
 import pandas as pd
+from src.features.feature_pipeline import FeaturePipeline
 
 print("Market Similarity Engine")
 
@@ -11,7 +12,7 @@ df = load_market_data(
     "data/raw/ETHUSDT_30m_fixed.csv"
 )
 
-validate_dataset(df)
+#validate_dataset(df)
 
 windows = build_windows(
     df,
@@ -59,6 +60,15 @@ print(windows[0].features)
 print(features)
 print(type(features))
 print(type(features["return"]))
+
+pipeline = FeaturePipeline(
+    extractor
+)
+feature_dataset = pipeline.build_feature_dataset(
+    windows[:5]
+)
+print(type(feature_dataset))
+print(feature_dataset.head())
 
 # test = pd.Series([
 #     None,
