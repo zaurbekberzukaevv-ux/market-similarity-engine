@@ -10,13 +10,13 @@ class FeatureExtractor:
 
     def calculate_window_return(
         self,
-        window
+        returns
     ):
         """
         Извлекает признаки из MarketWindow.
         Пока считаем только доходность окна.
         """
-        returns = self.calculate_returns(window)
+        #returns = self.calculate_returns(window)
         growth_factors = returns+1
         total_growth = growth_factors.prod()
         window_return = total_growth - 1
@@ -26,9 +26,9 @@ class FeatureExtractor:
 
     def calculate_volatility(
         self,
-        window
+        returns
     ):
-        returns = self.calculate_returns(window)
+        #returns = self.calculate_returns(window)
         volatility = returns.std()
 
         return volatility
@@ -37,7 +37,8 @@ class FeatureExtractor:
         self,
         window
     ):
+        returns = self.calculate_returns(window)
         return {
-            "return" : self.calculate_window_return(window),
-            "volatility" : self.calculate_volatility(window)
+            "return" : self.calculate_window_return(returns),
+            "volatility" : self.calculate_volatility(returns)
         }
