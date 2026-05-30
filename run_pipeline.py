@@ -43,7 +43,7 @@ print(type(extractor))
 extractor = FeatureExtractor()
 
 returns = extractor.calculate_returns(
-    windows[0]
+    windows[0].data["close"]
 )
 
 print(returns)
@@ -69,6 +69,7 @@ feature_dataset = pipeline.build_feature_dataset(
 )
 print(type(feature_dataset))
 print(feature_dataset.head())
+
 
 # test = pd.Series([
 #     None,
