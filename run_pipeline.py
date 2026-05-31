@@ -5,6 +5,7 @@ from src.windows.market_window import MarketWindow
 from src.features.feature_extractor import FeatureExtractor
 import pandas as pd
 from src.features.feature_pipeline import FeaturePipeline
+from src.features.feature_scaler import FeatureScaler
 
 print("Market Similarity Engine")
 
@@ -70,7 +71,19 @@ feature_dataset = pipeline.build_feature_dataset(
 print(type(feature_dataset))
 print(feature_dataset.head())
 
+scaler = FeatureScaler()
 
+scaler.fit(
+    feature_dataset
+)
+
+scaled_dataset = scaler.transform(
+    feature_dataset
+)
+
+print(
+    scaled_dataset.head()
+)
 # test = pd.Series([
 #     None,
 #     0.1,
