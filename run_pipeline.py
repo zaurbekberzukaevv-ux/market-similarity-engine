@@ -6,7 +6,7 @@ from src.features.feature_extractor import FeatureExtractor
 import pandas as pd
 from src.features.feature_pipeline import FeaturePipeline
 from src.features.feature_scaler import FeatureScaler
-
+from src.similarity.similarity_metric import SimilarityMetric
 print("Market Similarity Engine")
 
 df = load_market_data(
@@ -84,6 +84,14 @@ scaled_dataset = scaler.transform(
 print(
     scaled_dataset.head()
 )
+
+print(type(scaled_dataset.iloc[0]))
+
+similarity = SimilarityMetric()
+print(similarity.calculate(
+    scaled_dataset.iloc[0],
+    scaled_dataset.iloc[1]
+))
 # test = pd.Series([
 #     None,
 #     0.1,
