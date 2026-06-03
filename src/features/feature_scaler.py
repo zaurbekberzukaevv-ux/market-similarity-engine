@@ -9,13 +9,19 @@ class FeatureScaler:
         self,
         feature_dataset
     ):
-        self.means = feature_dataset.mean()
-        self.stds = feature_dataset.std()
+        features_only = feature_dataset.drop(
+        columns=["window_id"]
+    )
+        self.means = features_only.mean()
+        self.stds = features_only.std()
 
     def transform(
         self,
         feature_dataset
     ):
-        scaled_dataset =  (feature_dataset-self.means)/self.stds
-
+        features_only = feature_dataset.drop(
+        columns=["window_id"]
+    )
+        scaled_dataset =  (features_only-self.means)/self.stds
+        scaled_dataset["window_id"] = feature_dataset["window_id"]
         return scaled_dataset

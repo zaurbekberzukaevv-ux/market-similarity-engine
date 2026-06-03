@@ -92,6 +92,30 @@ print(similarity.calculate(
     scaled_dataset.iloc[0],
     scaled_dataset.iloc[1]
 ))
+
+print(feature_dataset.head())
+
+from src.similarity.similarity_search import SimilaritySearch
+
+search = SimilaritySearch(
+    historical_dataset=scaled_dataset,
+    similarity_metric=similarity
+)
+
+target_vector = scaled_dataset.iloc[0].drop(
+    labels=["window_id"]
+)
+
+results = search._calculate_scores(
+    target_vector
+)
+
+print(type(results))
+print(len(results))
+print(results[0])
+print(type(results[0]))
+
+print(scaled_dataset.dtypes)
 # test = pd.Series([
 #     None,
 #     0.1,
