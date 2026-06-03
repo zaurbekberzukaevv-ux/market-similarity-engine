@@ -37,7 +37,16 @@ class SimilaritySearch:
         target_window_id,
         exclusion_radius
     ):
-        pass
+        filtered_results = []
+        for result in results:
+            window_id = result["window_id"]
+            if abs(
+                window_id - target_window_id 
+            )<= exclusion_radius:
+                continue
+            filtered_results.append(result)
+
+        return filtered_results
 
     def _sort_results(
         self,
