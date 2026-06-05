@@ -16,11 +16,9 @@ class SimilaritySearch:
         results = []
         for _, row in self.historical_dataset.iterrows():
             window_id = row["window_id"]
-            condidate_vector = row.drop(labels=["window_id"])
+            candidate_vector = row.drop(labels=["window_id"])
             
-            similarity_score = self.similarity_metric.calculate(target_vector,condidate_vector)
-            print(window_id)
-            print(type(window_id))
+            similarity_score = self.similarity_metric.calculate(target_vector,candidate_vector)
             results.append(
                 {
                     "window_id" : window_id,
@@ -52,7 +50,12 @@ class SimilaritySearch:
         self,
         results
     ):
-        pass
+        sorted_results = sorted(
+            results,
+            key=lambda result: result["similarity_score"],
+            reverse=True
+        )
+        return sorted_results
 
     def find_similar(
         self,
