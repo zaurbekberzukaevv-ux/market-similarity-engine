@@ -64,4 +64,20 @@ class SimilaritySearch:
         top_n,
         exclusion_radius
     ):
-        pass
+        results = self._calculate_scores(
+            target_vector
+        )
+
+        filtered_results = self._filter_neighbors(
+            results,
+            target_window_id,
+            exclusion_radius
+        )
+
+        sorted_results = self._sort_results(
+            filtered_results
+        )
+
+        top_results = sorted_results[:top_n]
+
+        return top_results
