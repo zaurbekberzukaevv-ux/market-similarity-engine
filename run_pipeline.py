@@ -7,6 +7,8 @@ import pandas as pd
 from src.features.feature_pipeline import FeaturePipeline
 from src.features.feature_scaler import FeatureScaler
 from src.similarity.similarity_metric import SimilarityMetric
+from src.outcomes.outcome_engine import OutcomeEngine
+
 print("Market Similarity Engine")
 
 df = load_market_data(
@@ -134,6 +136,24 @@ results = search.find_similar(
 print(results)
 print(type(results))
 print(len(results))
+
+outcome_engine = OutcomeEngine(
+    historical_dataset=df,
+    horizon=10,
+    window_size=20
+)
+
+outcomes_dataset = outcome_engine.create_outcomes_dataset()
+
+print(type(outcomes_dataset))
+
+print(outcomes_dataset.head())
+
+print(outcomes_dataset.tail())
+
+print(outcomes_dataset.shape)
+
+print(outcomes_dataset.dtypes)
 # test = pd.Series([
 #     None,
 #     0.1,
