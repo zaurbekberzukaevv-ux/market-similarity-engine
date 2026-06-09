@@ -38,11 +38,13 @@ class OutcomeEngine:
                 "mae": np.nan
             }
         entry_price = self.historical_dataset.iloc[end_index]["close"]
-        future_prices = self.historical_dataset.iloc[future_start:future_end+1]["close"]
+        future_closes = self.historical_dataset.iloc[future_start:future_end+1]["close"]
+        future_highs = self.historical_dataset.iloc[future_start:future_end+1]["high"]
+        future_lows = self.historical_dataset.iloc[future_start:future_end+1]["low"]
 
-        final_return = self._calculate_final_return(entry_price, future_prices)
-        mfe = self._calculate_mfe(entry_price, future_prices)
-        mae = self._calculate_mae(entry_price, future_prices)
+        final_return = self._calculate_final_return(entry_price, future_closes)
+        mfe = self._calculate_mfe(entry_price, future_highs)
+        mae = self._calculate_mae(entry_price, future_lows)
         return {
             "window_id": window_id,
             "final_return": final_return,
@@ -53,26 +55,26 @@ class OutcomeEngine:
     def _calculate_final_return(
         self,
         entry_price,
-        future_prices
+        future_closes
     ):
-        last_price = future_prices.iloc[-1]
+        last_price = future_closes.iloc[-1]
         final_return = (last_price/entry_price)-1
         return final_return
 
     def _calculate_mfe(
         self,
         entry_price,
-        future_prices
+        future_highs
     ):
-        max_price = future_prices.max()
+        max_price = future_highs.max()
         mfe = (max_price/entry_price)-1
         return mfe
 
     def _calculate_mae(
         self,
         entry_price,
-        future_prices
+        future_lows
     ):
-        min_price = future_prices.min()
+        min_price = future_lows.min()
         mae = (min_price/entry_price)-1
         return mae
