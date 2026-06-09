@@ -8,6 +8,10 @@ from src.features.feature_pipeline import FeaturePipeline
 from src.features.feature_scaler import FeatureScaler
 from src.similarity.similarity_metric import SimilarityMetric
 from src.outcomes.outcome_engine import OutcomeEngine
+from src.statistics.outcome_statistics import OutcomeStatistics
+from src.similarity.similarity_search import SimilaritySearch
+from src.similarity.similarity_search import SimilaritySearch
+from src.analysis.market_analyzer import MarketAnalyzer
 
 print("Market Similarity Engine")
 
@@ -22,120 +26,45 @@ windows = build_windows(
     window_size=20
 )
 
-print(
-    f"Total windows: {len(windows)}"
-)
-print(windows[0])
+print(type(windows))
 
-market_window = windows[0]
-
-print(type(market_window))
-print(market_window.window_id)
-print(type(market_window.data))
-
-print(market_window.data.head(3))
-print(len(market_window.data))
-
-print(market_window.start_time)
-print(market_window.end_time)
-print(market_window.window_size)
 
 extractor = FeatureExtractor()
 print(type(extractor))
 
-extractor = FeatureExtractor()
-
-returns = extractor.calculate_returns(
-    windows[0].data["close"]
-)
-
-print(returns)
-print(type(returns))
-print(len(returns))
-
-features = extractor.extract(
-    windows[0]
-)
-
-windows[0].features = features
-print(windows[0].features)
-
-print(features)
-print(type(features))
-print(type(features["return"]))
-
-pipeline = FeaturePipeline(
-    extractor
-)
-feature_dataset = pipeline.build_feature_dataset(
-    windows[:5]
-)
+pipeline = FeaturePipeline(extractor)
+feature_dataset = pipeline.build_feature_dataset(windows)
 print(type(feature_dataset))
-print(feature_dataset.head())
 
 scaler = FeatureScaler()
 
-scaler.fit(
-    feature_dataset
-)
+scaler.fit(feature_dataset)
 
-scaled_dataset = scaler.transform(
-    feature_dataset
-)
+scaled_dataset = scaler.transform(feature_dataset)
 
-print(
-    scaled_dataset.head()
-)
 
-print(type(scaled_dataset.iloc[0]))
+
+print(type(scaled_dataset))
 
 similarity = SimilarityMetric()
-print(similarity.calculate(
-    scaled_dataset.iloc[0],
-    scaled_dataset.iloc[1]
-))
 
-print(feature_dataset.head())
+search = SimilaritySearch(historical_dataset=scaled_dataset,similarity_metric=similarity)
 
-from src.similarity.similarity_search import SimilaritySearch
+target_vector = scaled_dataset.iloc[0].drop(labels=["window_id"])
 
-search = SimilaritySearch(
-    historical_dataset=scaled_dataset,
-    similarity_metric=similarity
-)
-
-target_vector = scaled_dataset.iloc[0].drop(
-    labels=["window_id"]
-)
-
-results = search._calculate_scores(
-    target_vector
-)
+results = search._calculate_scores(target_vector)
 
 print(type(results))
-print(len(results))
-print(results[0])
-print(type(results[0]))
 
-print(scaled_dataset.dtypes)
-
-from src.similarity.similarity_search import SimilaritySearch
-
-search = SimilaritySearch(
-    historical_dataset=scaled_dataset,
-    similarity_metric=similarity
-)
+search = SimilaritySearch(historical_dataset=scaled_dataset,similarity_metric=similarity)
 
 results = search.find_similar(
     target_vector=scaled_dataset.iloc[0].drop(labels=["window_id"]),
     target_window_id=0,
-    top_n=3,
-    exclusion_radius=1
+    top_n=20,
+    exclusion_radius=20
 )
-
-print(results)
 print(type(results))
-print(len(results))
 
 outcome_engine = OutcomeEngine(
     historical_dataset=df,
@@ -145,15 +74,39 @@ outcome_engine = OutcomeEngine(
 
 outcomes_dataset = outcome_engine.create_outcomes_dataset()
 
-print(type(outcomes_dataset))
+statistics = OutcomeStatistics(
+    outcomes_dataset
+)
+quantiles = statistics.calculate_quantiles(
+    similar_windows=results,
+    column_name="final_return",
+    quantiles=[0.1, 0.25, 0.5, 0.75, 0.9]
+)
 
-print(outcomes_dataset.head())
+print(quantiles)
 
-print(outcomes_dataset.tail())
 
-print(outcomes_dataset.shape)
 
-print(outcomes_dataset.dtypes)
+statistics = OutcomeStatistics(
+    outcomes_dataset
+)
+
+analyzer = MarketAnalyzer(
+    similarity_search=search,
+    outcome_statistics=statistics
+)
+
+report = analyzer.analyze(
+    target_vector=scaled_dataset.iloc[0].drop(
+        labels=["window_id"]
+    ),
+    target_window_id=0,
+    top_n=20,
+    exclusion_radius=20,
+    threshold=0.01
+)
+
+print(report)
 # test = pd.Series([
 #     None,
 #     0.1,
